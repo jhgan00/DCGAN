@@ -86,7 +86,7 @@ class DCGAN:
             if (epoch + 1) % 10 == 0:
                 self.checkpoint.save(file_prefix=self.checkpoint_prefix)
 
-            tqdm.write(f"Epoch: {epoch+1}   Time: {round(time()-start)}sec  G: {round(gen_loss.numpy(),3)} D: {round(disc_loss.numpy(),3)}")
+            tqdm.write(f"Epoch: {epoch+1}   Time: {round(time()-start)}sec  G: {round(gen_loss,3)} D: {round(disc_loss,3)}")
             test_input = tf.random.normal([5, self.noise_dim])
             img = self.generator(test_input, training=False)
             fig = self.plot_to_image(self.image_grid(img))

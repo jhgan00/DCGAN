@@ -6,7 +6,7 @@ from time import time
 from tqdm import tqdm
 
 class DCGAN:
-    def __init__(self, batch_size=2, noise_dim=100):
+    def __init__(self, batch_size=256, noise_dim=100):
         self.generator = md.generator
         self.gen_optimizer = md.generator_optimizer
         self.discriminator = md.discriminator

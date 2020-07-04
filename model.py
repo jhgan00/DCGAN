@@ -49,7 +49,7 @@ class DCGAN:
                     gen_loss, disc_loss = self.train_step(batch)
                     progress_bar.update(1)  # update progress
             if (epoch + 1) % 10 == 0:
-                self.checkpoint.save(file_prefix=checkpoint_prefix)
+                self.checkpoint.save(file_prefix=self.checkpoint_prefix)
 
             tqdm.write(f"Epoch: {epoch+1}   Time: {round(time()-start)}sec  G: {round(gen_loss.numpy(),3)} D: {round(disc_loss.numpy(),3)}")
             current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")

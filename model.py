@@ -19,6 +19,7 @@ class DCGAN:
         self.steps_per_epoch = int(60000/batch_size)
         self.noise_dim = noise_dim
         self.dataset = dataset.create_dataset(self.batch_size)
+        self.test_input = tf.random.normal([10, self.noise_dim])
 
     def train_step(self, images):
         noise = tf.random.normal([self.batch_size, self.noise_dim])
@@ -57,5 +58,6 @@ class DCGAN:
             train_summary_writer = tf.summary.create_file_writer(train_log_dir)
 
             with train_summary_writer.as_default():
-                tf.summary.scalar('G loss', gen_loss, step=epoch)
-                tf.summary.scalar('D loss', disc_loss, step=epoch)
+                tf.summary.scalar('Generator loss', gen_loss, step=epoch)
+                tf.summary.scalar('Discriminator loss', disc_loss, step=epoch)
+                tf.summary.image("Generated Image", img, step=epoch)

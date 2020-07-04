@@ -49,7 +49,11 @@ class DCGAN:
                     progress_bar.update(1)  # update progress
             if (epoch + 1) % 10 == 0:
                 self.checkpoint.save(file_prefix=checkpoint_prefix)
+<<<<<<< HEAD
             tqdm.write(f"Epoch: {epoch+1}   Time: {round(time()-start)}sec  G: {tf.math.round(gen_loss,3)} D: {tf.math.round(disc_loss,3)}")
+=======
+            tqdm.write(f"Epoch: {epoch+1}   Time: {round(time()-start)}sec  G: {round(gen_loss,3)} D: {round(disc_loss,3)}")
+>>>>>>> master
 
             current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 

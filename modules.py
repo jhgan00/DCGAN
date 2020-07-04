@@ -60,7 +60,7 @@ def discriminator_loss(real_output, fake_output):
     return total_loss
 
 def generator_loss(fake_output):
-    return gen_loss(tf.ones_like(fake_output), fake_output, from_logits=True)
+    return gen_loss(tf.ones_like(fake_output), fake_output)
 
 checkpoint = tf.train.Checkpoint(
     generator_optimizer=generator_optimizer,

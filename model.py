@@ -83,8 +83,7 @@ class DCGAN:
                 for batch in self.dataset:
                     gen_loss, disc_loss = self.train_step(batch)
                     progress_bar.update(1)  # update progress
-            if (epoch + 1) % 10 == 0:
-                self.checkpoint.save(file_prefix=self.checkpoint_prefix)
+            self.checkpoint.save(file_prefix=self.checkpoint_prefix)
 
             tqdm.write(f"Epoch: {epoch+1}   Time: {round(time()-start)}sec  G: {round(gen_loss,3)} D: {round(disc_loss,3)}")
             test_input = tf.random.normal([5, self.noise_dim])

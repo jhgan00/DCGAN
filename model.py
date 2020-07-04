@@ -7,6 +7,7 @@ from tqdm import tqdm
 import datetime
 import io
 import matplotlib.pyplot as plt
+import numpy as np
 
 class DCGAN:
     def __init__(self, batch_size=256, noise_dim=100):
@@ -43,7 +44,7 @@ class DCGAN:
     def image_grid(self, generated_imaage):
         """Return a 5x5 grid of the MNIST images as a matplotlib figure."""
         # Create a figure to contain the plot.
-        images = generated_imaage.numpy()
+        images = np.squeeze(generated_imaage.numpy())
         figure = plt.figure(figsize=(10, 10))
         for i in range(5):
             # Start next subplot.

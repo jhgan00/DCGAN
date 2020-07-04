@@ -16,6 +16,7 @@ class DCGAN:
         self.checkpoint_prefix = os.path.join(self.checkpoint_dir, "ckpt")
         self.checkpoint = md.checkpoint
         self.batch_size = batch_size
+        self.steps_per_epoch = int(60000/batch_size)
         self.noise_dim = noise_dim
         self.dataset = dataset.create_dataset(self.batch_size)
 
@@ -39,13 +40,16 @@ class DCGAN:
         return gen_loss, disc_loss
 
     def train(self, epochs):
+        print()
         for epoch in range(epochs):
             start = time()
-            for batch in tqdm(self.dataset):
-                gen_loss, disc_loss = self.train_step(batch)
-            if (epoch + 1) % 15 == 0:
+            with tqdm(total=self.steps_per_epoch) as progress_bar:
+                for batch in self.dataset:
+                    gen_loss, disc_loss = self.train_step(batch)
+                    progress_bar.update(1)  # update progress
+            if (epoch + 1) % 10 == 0:
                 self.checkpoint.save(file_prefix=checkpoint_prefix)
-            tqdm.write(f"Epoch {epoch}   Time: {round(time()-start)}sec  G loss: {gen_loss}  D loss: {disc_loss}")
+            tqdm.write(f"Epoch: {epoch+1}   Time: {round(time()-start)}sec  G: {round(gen_loss,3)} D: {round(disc_loss,3)}")
 
             current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 

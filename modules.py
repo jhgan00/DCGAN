@@ -54,9 +54,9 @@ disc_loss = Sum("Loss(D)")
 gen_loss = BinaryCrossentropy(from_logits=True, name="Loss(G)")
 
 def discriminator_loss(real_output, fake_output):
-    real_loss = cross_entropy(tf.ones_like(real_output), real_output)
-    fake_loss = cross_entropy(tf.zeros_like(fake_output), fake_output)
-    total_loss = disc_loss(real_loss + fake_loss)
+    real_loss = disc_cross_entropy(tf.ones_like(real_output), real_output)
+    fake_loss = disc_cross_entropy(tf.zeros_like(fake_output), fake_output)
+    total_loss = disc_loss(real_loss + fakes_loss)
     return total_loss
 
 def generator_loss(fake_output):

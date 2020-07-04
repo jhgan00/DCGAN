@@ -26,7 +26,6 @@ class DCGAN:
         self.checkpoint_dir = "./training_checkpoints"
         self.checkpoint_prefix = os.path.join(self.checkpoint_dir, "ckpt")
         self.checkpoint = md.checkpoint
-        self.checkpoint_manager = md.checkpoint_manager
 
         # create or restore the checkpoint
         if not os.path.exists(self.checkpoint_dir):

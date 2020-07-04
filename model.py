@@ -22,7 +22,6 @@ class DCGAN:
         self.steps_per_epoch = int(60000/batch_size)
         self.noise_dim = noise_dim
         self.dataset = dataset.create_dataset(self.batch_size)
-        self.test_input = tf.random.normal([5, self.noise_dim])
 
     def plot_to_image(self, figure):
         """Converts the matplotlib plot specified by 'figure' to a PNG image and
@@ -72,10 +71,10 @@ class DCGAN:
         self.gen_optimizer.apply_gradients(zip(grads_gen, self.generator.trainable_variables))
         self.disc_optimizer.apply_gradients(zip(grads_disc, self.discriminator.trainable_variables))
 
-        return gen_loss, disc_loss
+        return round(gen_loss.numpy(),3), round(disc_loss.numpy(), 3)
 
     def train(self, epochs):
-        print()
+        self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
         for epoch in range(epochs):
             start = time()
             with tqdm(total=self.steps_per_epoch) as progress_bar:
@@ -86,7 +85,8 @@ class DCGAN:
                 self.checkpoint.save(file_prefix=self.checkpoint_prefix)
 
             tqdm.write(f"Epoch: {epoch+1}   Time: {round(time()-start)}sec  G: {round(gen_loss.numpy(),3)} D: {round(disc_loss.numpy(),3)}")
-            img = self.generator(self.test_input, training=False)
+            test_input = tf.random.normal([5, self.noise_dim])
+            img = self.generator(test_input, training=False)
             fig = self.plot_to_image(self.image_grid(img))
 
             current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")

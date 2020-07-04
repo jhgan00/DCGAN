@@ -63,3 +63,5 @@ checkpoint = tf.train.Checkpoint(
     generator=generator,
     discriminator=discriminator
 )
+
+checkpoint_manager = tf.train.CheckpointManager(checkpoint, "./training_checkpoints")

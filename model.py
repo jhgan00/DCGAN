@@ -11,17 +11,39 @@ import numpy as np
 
 class DCGAN:
     def __init__(self, batch_size=256, noise_dim=100):
+        # set training info
+        self.batch_size = batch_size
+        self.steps_per_epoch = int(60000 / batch_size)
+        self.noise_dim = noise_dim
+
+        # set modules
         self.generator = md.generator
         self.gen_optimizer = md.generator_optimizer
         self.discriminator = md.discriminator
         self.disc_optimizer = md.discriminator_optimizer
+
+        # set checkpoint
         self.checkpoint_dir = "./training_checkpoints"
         self.checkpoint_prefix = os.path.join(self.checkpoint_dir, "ckpt")
         self.checkpoint = md.checkpoint
-        self.batch_size = batch_size
-        self.steps_per_epoch = int(60000/batch_size)
-        self.noise_dim = noise_dim
+        self.checkpoint_manager = md.checkpoint_manager
+
+        # create or restore the checkpoint
+        if not os.path.exists(self.checkpoint_dir):
+            print("[!] No checkpoint found: init a checkpoint")
+            os.mkdir(self.checkpoint_dir)
+            self.current_epoch = 1
+        else:
+            latest_checkpoint = tf.train.latest_checkpoint(self.checkpoint_dir)
+            print(f"[*] Restore the latest checkpoint: {latest_checkpoint}")
+            self.checkpoint.restore(latest_checkpoint)
+            self.current_epoch = int(latest_checkpoint.split("-")[-1]) + 1
+
+
+        # dataset
         self.dataset = dataset.create_dataset(self.batch_size)
+
+
 
     def plot_to_image(self, figure):
         """Converts the matplotlib plot specified by 'figure' to a PNG image and
@@ -74,10 +96,10 @@ class DCGAN:
         return round(gen_loss.numpy(),3), round(disc_loss.numpy(), 3)
 
     def train(self, epochs):
-        if not os.path.exists(self.checkpoint_dir):
-            os.mkdir(self.checkpoint_dir)
-        self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
-        for epoch in range(epochs):
+        if self.current_epoch > epochs:
+            print(f"Already reached {epochs}th epoch")
+            return None
+        for epoch in range(self.current_epoch-1, epochs):
             start = time()
             with tqdm(total=self.steps_per_epoch) as progress_bar:
                 for batch in self.dataset:
@@ -85,7 +107,7 @@ class DCGAN:
                     progress_bar.update(1)  # update progress
             self.checkpoint.save(file_prefix=self.checkpoint_prefix)
 
-            tqdm.write(f"Epoch: {epoch+1}   Time: {round(time()-start)}sec  G: {round(gen_loss,3)} D: {round(disc_loss,3)}")
+            tqdm.write(f"Epoch: {self.current_epoch}   Time: {round(time()-start)}sec  Loss(G): {gen_loss} Loss(D): {disc_loss}")
             test_input = tf.random.normal([5, self.noise_dim])
             img = self.generator(test_input, training=False)
             fig = self.plot_to_image(self.image_grid(img))

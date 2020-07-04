@@ -3,9 +3,10 @@ import modules as md
 import tensorflow as tf
 import os
 from time import time
+from tqdm import tqdm
 
 class DCGAN:
-    def __init__(self, batch_size=256, noise_dim=100):
+    def __init__(self, batch_size=2, noise_dim=100):
         self.generator = md.generator
         self.gen_optimizer = md.generator_optimizer
         self.discriminator = md.discriminator
@@ -34,12 +35,22 @@ class DCGAN:
         self.gen_optimizer.apply_gradients(zip(grads_gen, self.generator.trainable_variables))
         self.disc_optimizer.apply_gradients(zip(grads_disc, self.discriminator.trainable_variables))
 
+        return gen_loss, disc_loss
+
     def train(self, epochs):
-        for epoch in range(epochs):
-            print(f"Epoch {epoch}")
+        for epoch in tqdm(range(epochs)):
             start = time()
             for batch in self.dataset:
-                self.train_step(batch)
+                gen_loss, disc_loss = self.train_step(batch)
             if (epoch + 1) % 15 == 0:
                 self.checkpoint.save(file_prefix=checkpoint_prefix)
-            print(f"Time for epoch {epoch} is {time()-start} sec")
+            tqdm.write(f"Epoch {epoch}   Time: {round(time()-start)}sec  G loss: {gen_loss}  D loss: {disc_loss}")
+
+            current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+
+            train_log_dir = 'logs/gradient_tape/' + current_time + '/train'
+            train_summary_writer = tf.summary.create_file_writer(train_log_dir)
+
+            with train_summary_writer.as_default():
+                tf.summary.scalar('G loss', gen_loss, step=epoch)
+                tf.summary.scalar('D loss', disc_loss, step=epoch)

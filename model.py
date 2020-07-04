@@ -5,6 +5,7 @@ import os
 from time import time
 from tqdm import tqdm
 import datetime
+import io
 
 class DCGAN:
     def __init__(self, batch_size=256, noise_dim=100):
@@ -19,7 +20,38 @@ class DCGAN:
         self.steps_per_epoch = int(60000/batch_size)
         self.noise_dim = noise_dim
         self.dataset = dataset.create_dataset(self.batch_size)
-        self.test_input = tf.random.normal([10, self.noise_dim])
+        self.test_input = tf.random.normal([5, self.noise_dim])
+
+    def plot_to_image(self, figure):
+        """Converts the matplotlib plot specified by 'figure' to a PNG image and
+        returns it. The supplied figure is closed and inaccessible after this call."""
+        # Save the plot to a PNG in memory.
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        # Closing the figure prevents it from being displayed directly inside
+        # the notebook.
+        plt.close(figure)
+        buf.seek(0)
+        # Convert PNG buffer to TF image
+        image = tf.image.decode_png(buf.getvalue(), channels=4)
+        # Add the batch dimension
+        image = tf.expand_dims(image, 0)
+        return image
+
+
+    def image_grid(self, generated_imaage):
+        """Return a 5x5 grid of the MNIST images as a matplotlib figure."""
+        # Create a figure to contain the plot.
+        images = generated_imaage.numpy()
+        figure = plt.figure(figsize=(10, 10))
+        for i in range(5):
+            # Start next subplot.
+            plt.subplot(1, 5, i + 1)
+            plt.xticks([])
+            plt.yticks([])
+            plt.grid(False)
+            plt.imshow(images[i], cmap=plt.cm.binary)
+        return figure
 
     def train_step(self, images):
         noise = tf.random.normal([self.batch_size, self.noise_dim])
@@ -53,12 +85,14 @@ class DCGAN:
 
             tqdm.write(f"Epoch: {epoch+1}   Time: {round(time()-start)}sec  G: {round(gen_loss.numpy(),3)} D: {round(disc_loss.numpy(),3)}")
             img = self.generator(self.test_input, training=False)
+            fig = self.plot_to_image(self.image_grid(img))
+
             current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-            
+
             train_log_dir = 'logs/gradient_tape/' + current_time + '/train'
             train_summary_writer = tf.summary.create_file_writer(train_log_dir)
 
             with train_summary_writer.as_default():
                 tf.summary.scalar('Generator loss', gen_loss, step=epoch)
                 tf.summary.scalar('Discriminator loss', disc_loss, step=epoch)
-                tf.summary.image("Generated Image", img, step=epoch)
+                tf.summary.image("Generated Image", fig, step=epoch)

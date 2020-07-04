@@ -4,6 +4,7 @@ import tensorflow as tf
 import os
 from time import time
 from tqdm import tqdm
+import datetime
 
 class DCGAN:
     def __init__(self, batch_size=256, noise_dim=100):

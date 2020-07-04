@@ -120,3 +120,5 @@ class DCGAN:
                 tf.summary.scalar('Generator loss', gen_loss, step=epoch)
                 tf.summary.scalar('Discriminator loss', disc_loss, step=epoch)
                 tf.summary.image("Generated Image", fig, step=epoch)
+
+            self.current_epoch += 1

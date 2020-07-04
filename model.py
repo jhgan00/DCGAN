@@ -6,6 +6,7 @@ from time import time
 from tqdm import tqdm
 import datetime
 import io
+import matplotlib.pyplot as plt
 
 class DCGAN:
     def __init__(self, batch_size=256, noise_dim=100):

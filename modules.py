@@ -51,7 +51,7 @@ discriminator_optimizer = Adam(1e-4)
 # Losses
 disc_cross_entropy = BinaryCrossentropy(from_logits=True)
 disc_loss = Sum("Loss(D)")
-gen_loss = BinaryCrossentropy("Loss(G)", from_logits=True)
+gen_loss = BinaryCrossentropy(from_logits=True, name="Loss(G)")
 
 def discriminator_loss(real_output, fake_output):
     real_loss = cross_entropy(tf.ones_like(real_output), real_output)

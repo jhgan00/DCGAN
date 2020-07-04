@@ -52,8 +52,9 @@ class DCGAN:
                 self.checkpoint.save(file_prefix=self.checkpoint_prefix)
 
             tqdm.write(f"Epoch: {epoch+1}   Time: {round(time()-start)}sec  G: {round(gen_loss.numpy(),3)} D: {round(disc_loss.numpy(),3)}")
+            img = self.generator(self.test_input, training=False)
             current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-
+            
             train_log_dir = 'logs/gradient_tape/' + current_time + '/train'
             train_summary_writer = tf.summary.create_file_writer(train_log_dir)
 

@@ -2,6 +2,8 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import *
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.losses import BinaryCrossentropy
+from tensorflow.keras.metrics import Sum
 
 # Generator
 generator = Sequential([
@@ -47,16 +49,18 @@ discriminator_optimizer = Adam(1e-4)
 
 
 # Losses
-cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+disc_cross_entropy = BinaryCrossentropy(from_logits=True)
+disc_loss = Sum("Loss(D)")
+gen_loss = BinaryCrossentropy("Loss(G)", from_logits=True)
 
 def discriminator_loss(real_output, fake_output):
     real_loss = cross_entropy(tf.ones_like(real_output), real_output)
     fake_loss = cross_entropy(tf.zeros_like(fake_output), fake_output)
-    total_loss = (real_loss + fake_loss)
+    total_loss = disc_loss(real_loss + fake_loss)
     return total_loss
 
 def generator_loss(fake_output):
-    return cross_entropy(tf.ones_like(fake_output), fake_output)
+    return gen_loss(tf.ones_like(fake_output), fake_output, from_logits=True)
 
 checkpoint = tf.train.Checkpoint(
     generator_optimizer=generator_optimizer,

@@ -38,9 +38,9 @@ class DCGAN:
         return gen_loss, disc_loss
 
     def train(self, epochs):
-        for epoch in tqdm(range(epochs)):
+        for epoch in range(epochs):
             start = time()
-            for batch in self.dataset:
+            for batch in tqdm(self.dataset):
                 gen_loss, disc_loss = self.train_step(batch)
             if (epoch + 1) % 15 == 0:
                 self.checkpoint.save(file_prefix=checkpoint_prefix)

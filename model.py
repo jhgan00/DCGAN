@@ -74,6 +74,8 @@ class DCGAN:
         return round(gen_loss.numpy(),3), round(disc_loss.numpy(), 3)
 
     def train(self, epochs):
+        if not os.path.exists(self.checkpoint_dir):
+            os.mkdir(self.checkpoint_dir)
         self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
         for epoch in range(epochs):
             start = time()

@@ -117,8 +117,8 @@ class DCGAN:
             train_summary_writer = tf.summary.create_file_writer(train_log_dir)
 
             with train_summary_writer.as_default():
-                tf.summary.scalar('Loss(G)', gen_loss, step=epoch)
-                tf.summary.scalar('Loss(D)', disc_loss, step=epoch)
+                tf.summary.scalar('Loss(G)', gen_loss.numpy(), step=epoch)
+                tf.summary.scalar('Loss(D)', disc_loss.numpy(), step=epoch)
                 tf.summary.image("Generated Images", fig, step=epoch)
 
             self.current_epoch += 1

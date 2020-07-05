@@ -111,9 +111,9 @@ class DCGAN:
             img = self.generator(test_input, training=False)
             fig = self.plot_to_image(self.image_grid(img))
 
-            current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+            # current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 
-            train_log_dir = 'logs/gradient_tape/' + current_time + '/train'
+            train_log_dir = 'logs/gradient_tape/train'
             train_summary_writer = tf.summary.create_file_writer(train_log_dir)
 
             with train_summary_writer.as_default():

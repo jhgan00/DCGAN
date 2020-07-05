@@ -92,7 +92,7 @@ class DCGAN:
         self.gen_optimizer.apply_gradients(zip(grads_gen, self.generator.trainable_variables))
         self.disc_optimizer.apply_gradients(zip(grads_disc, self.discriminator.trainable_variables))
 
-        return round(gen_loss.numpy(),3), round(disc_loss.numpy(), 3)
+        return gen_loss, disc_loss
 
     def train(self, epochs):
         if self.current_epoch > epochs:
@@ -106,7 +106,7 @@ class DCGAN:
                     progress_bar.update(1)  # update progress
             self.checkpoint.save(file_prefix=self.checkpoint_prefix)
 
-            tqdm.write(f"Epoch: {self.current_epoch}   Time: {round(time()-start)}sec  Loss(G): {gen_loss} Loss(D): {disc_loss}")
+            tqdm.write(f"Epoch: {self.current_epoch}   Time: {round(time()-start)}sec  Loss(G): {gen_loss.numpy()} Loss(D): {disc_loss.numpy()}")
             test_input = tf.random.normal([5, self.noise_dim])
             img = self.generator(test_input, training=False)
             fig = self.plot_to_image(self.image_grid(img))

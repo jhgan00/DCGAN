@@ -65,7 +65,7 @@ class DCGAN:
         """Return a 5x5 grid of the MNIST images as a matplotlib figure."""
         # Create a figure to contain the plot.
         images = np.squeeze(generated_images.numpy())
-        figure = plt.figure(figsize=(5, 1))
+        figure = plt.figure(figsize=(10, 2))
         for i in range(5):
             # Start next subplot.
             plt.subplot(1, 5, i + 1)
